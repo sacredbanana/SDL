@@ -68,12 +68,15 @@ static void DUMMY_UpdateRects(_THIS, int numrects, SDL_Rect *rects);
 
 static int DUMMY_Available(void)
 {
+	return(1);
+/*	
 	const char *envr = SDL_getenv("SDL_VIDEODRIVER");
 	if ((envr) && (SDL_strcmp(envr, DUMMYVID_DRIVER_NAME) == 0)) {
 		return(1);
 	}
 
 	return(0);
+*/
 }
 
 static void DUMMY_DeleteDevice(SDL_VideoDevice *device)
