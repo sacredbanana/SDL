@@ -3905,6 +3905,68 @@ AC_HELP_STRING([--enable-render-d3d], [enable the Direct3D render driver [[defau
             have_timers=yes
         fi
         ;;
+        
+        arm-vita-eabi*)
+        ARCH=vita
+        EXTRA_CFLAGS="$EXTRA_CFLAGS -D__VITA__ -D__ARM_ARCH=7 -D__ARM_ARCH_7A__ -D__CC_ARM"
+        EXTRA_CFLAGS="$EXTRA_CFLAGS -g -Wl,-q -O3 -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard"
+        EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lvita2d -lSceDisplay_stub -lSceGxm_stub -lSceAudio_stub -lSceCtrl_stub"
+        EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lSceHid_stub -lSceTouch_stub -lSceSysmodule_stub -lSceCommonDialog_stub -lm"
+
+        CheckDeclarationAfterStatement
+
+        # Set up files for the video library
+        if test x$enable_video = xyes; then
+           AC_DEFINE(SDL_VIDEO_DRIVER_VITA, 1, [ ])
+           SOURCES="$SOURCES $srcdir/src/video/vita/*.c"
+           SUMMARY_video="${SUMMARY_video} vita"
+           have_video=yes
+        fi
+        # Set up files for the render library
+        if test x$enable_render = xyes; then
+            AC_DEFINE(SDL_VIDEO_RENDER_VITA, 1, [ ])
+            SOURCES="$SOURCES $srcdir/src/render/vita/*.c"
+            SUMMARY_render="${SUMMARY_render} vita"
+            have_render=yes
+        fi
+        # Set up files for the audio library
+        if test x$enable_audio = xyes; then
+           AC_DEFINE(SDL_AUDIO_DRIVER_VITA, 1, [ ])
+           SOURCES="$SOURCES $srcdir/src/audio/vita/*.c"
+           SUMMARY_audio="${SUMMARY_audio} vita"
+           have_audio=yes
+        fi
+        # Set up files for the joystick library
+        if test x$enable_joystick = xyes; then
+            AC_DEFINE(SDL_JOYSTICK_VITA, 1, [ ])
+            SOURCES="$SOURCES $srcdir/src/joystick/vita/*.c"
+            have_joystick=yes
+        fi
+        # Set up files for the timer library
+        if test x$enable_timers = xyes; then
+            AC_DEFINE(SDL_TIMER_VITA, 1, [ ])
+            SOURCES="$SOURCES $srcdir/src/timer/vita/*.c"
+            have_timers=yes
+        fi
+        # Set up files for the system power library
+        if test x$enable_power = xyes; then
+            AC_DEFINE(SDL_POWER_VITA, 1, [ ])
+            SOURCES="$SOURCES $srcdir/src/power/vita/*.c"
+            have_power=yes
+        fi
+        # Set up files for the system filesystem library
+        if test x$enable_filesystem = xyes; then
+            AC_DEFINE(SDL_FILESYSTEM_VITA, 1, [ ])
+            SOURCES="$SOURCES $srcdir/src/filesystem/vita/*.c"
+            have_filesystem=yes
+        fi
+        # Set up files for the thread library
+        if test x$enable_threads = xyes; then
+            AC_DEFINE(SDL_THREAD_VITA, 1, [ ])
+            SOURCES="$SOURCES $srcdir/src/thread/vita/*.c"
+            have_threads=yes
+        fi
+        ;;
     *)
         AC_MSG_ERROR([
 *** Unsupported host:  Please add to configure.in

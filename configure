@@ -745,6 +745,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -923,6 +924,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE}'
@@ -1175,6 +1177,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1312,7 +1323,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1465,6 +1476,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -1572,7 +1584,7 @@ Optional Features:
                           QtWayland server support for Wayland video driver
                           [[default=yes]]
   --enable-wayland-shared dynamically load Wayland support [[default=maybe]]
-  --enable-video-mir      use Mir video driver [[default=yes]]
+  --enable-video-mir      use Mir video driver [[default=no]]
   --enable-mir-shared     dynamically load Mir support [[default=maybe]]
   --enable-video-rpi      use Raspberry Pi video driver [[default=yes]]
   --enable-video-x11      use X11 video driver [[default=yes]]
@@ -19300,7 +19312,7 @@ CheckMir()
 if test "${enable_video_mir+set}" = set; then :
   enableval=$enable_video_mir;
 else
-  enable_video_mir=yes
+  enable_video_mir=no
 fi
 
 
@@ -24619,6 +24631,81 @@ $as_echo "#define SDL_TIMER_UNIX 1" >>confdefs.h
 
             SOURCES="$SOURCES $srcdir/src/timer/unix/*.c"
             have_timers=yes
+        fi
+        ;;
+
+        arm-vita-eabi*)
+        ARCH=vita
+        EXTRA_CFLAGS="$EXTRA_CFLAGS -D__VITA__ -D__ARM_ARCH=7 -D__ARM_ARCH_7A__ -D__CC_ARM"
+        EXTRA_CFLAGS="$EXTRA_CFLAGS -g -Wl,-q -O3 -mfpu=neon -mcpu=cortex-a9 -march=armv7-a -mfloat-abi=hard"
+        CheckDeclarationAfterStatement
+
+        # Set up files for the video library
+        if test x$enable_video = xyes; then
+
+$as_echo "#define SDL_VIDEO_DRIVER_VITA 1" >>confdefs.h
+
+           SOURCES="$SOURCES $srcdir/src/video/vita/*.c"
+           SUMMARY_video="${SUMMARY_video} vita"
+           have_video=yes
+        fi
+        # Set up files for the render library
+        if test x$enable_render = xyes; then
+
+$as_echo "#define SDL_VIDEO_RENDER_VITA 1" >>confdefs.h
+
+            SOURCES="$SOURCES $srcdir/src/render/vita/*.c"
+            SUMMARY_render="${SUMMARY_render} vita"
+            have_render=yes
+        fi
+        # Set up files for the audio library
+        if test x$enable_audio = xyes; then
+
+$as_echo "#define SDL_AUDIO_DRIVER_VITA 1" >>confdefs.h
+
+           SOURCES="$SOURCES $srcdir/src/audio/vita/*.c"
+           SUMMARY_audio="${SUMMARY_audio} vita"
+           have_audio=yes
+        fi
+        # Set up files for the joystick library
+        if test x$enable_joystick = xyes; then
+
+$as_echo "#define SDL_JOYSTICK_VITA 1" >>confdefs.h
+
+            SOURCES="$SOURCES $srcdir/src/joystick/vita/*.c"
+            have_joystick=yes
+        fi
+        # Set up files for the timer library
+        if test x$enable_timers = xyes; then
+
+$as_echo "#define SDL_TIMER_VITA 1" >>confdefs.h
+
+            SOURCES="$SOURCES $srcdir/src/timer/vita/*.c"
+            have_timers=yes
+        fi
+        # Set up files for the system power library
+        if test x$enable_power = xyes; then
+
+$as_echo "#define SDL_POWER_VITA 1" >>confdefs.h
+
+            SOURCES="$SOURCES $srcdir/src/power/vita/*.c"
+            have_power=yes
+        fi
+        # Set up files for the system filesystem library
+        if test x$enable_filesystem = xyes; then
+
+$as_echo "#define SDL_FILESYSTEM_VITA 1" >>confdefs.h
+
+            SOURCES="$SOURCES $srcdir/src/filesystem/vita/*.c"
+            have_filesystem=yes
+        fi
+        # Set up files for the thread library
+        if test x$enable_threads = xyes; then
+
+$as_echo "#define SDL_THREAD_VITA 1" >>confdefs.h
+
+            SOURCES="$SOURCES $srcdir/src/thread/vita/*.c"
+            have_threads=yes
         fi
         ;;
     *)

@@ -348,6 +348,8 @@ CPU_haveNEON(void)
 #elif defined(__APPLE__) && (__ARM_ARCH >= 7)
     /* (note that sysctlbyname("hw.optional.neon") doesn't work!) */
     return 1;  /* all Apple ARMv7 chips and later have NEON. */
+#elif __VITA__
+	return 1;
 #elif defined(__APPLE__)
     return 0;  /* assume anything else from Apple doesn't have NEON. */
 #elif defined(__QNXNTO__)
