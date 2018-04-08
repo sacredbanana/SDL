@@ -932,13 +932,13 @@ AC_HELP_STRING([--enable-nintendo-switch], [configure SDL to work with nintendo 
         , enable_nintendo_switch=no)
 	if test x$enable_nintendo_switch = xyes; then
         ARCH=nintendo-switch
-        NSWITCH_CFLAGS="-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE \
+        NSWITCH_CFLAGS="-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIC \
                      -Wall -O2 -ffunction-sections \
                      -I$DEVKITPRO/libnx/include -D__SWITCH__"
         EXTRA_CFLAGS="$EXTRA_CFLAGS $NSWITCH_CFLAGS"
         CFLAGS="$CFLAGS $NSWITCH_CFLAGS"
         SDL_CFLAGS="$SDL_CFLAGS $NSWITCH_CFLAGS"
-        SDL_LIBS="-specs=$(DEVKITPRO)/libnx/switch.specs -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE \
+        SDL_LIBS="-specs=${DEVKITPRO}/libnx/switch.specs -march=armv8-a -mtune=cortex-a57 -mtp=soft \
                   -L${DEVKITPRO}/portlibs/switch/lib $SDL_LIBS \
                   -L${DEVKITPRO}/libnx/lib -lnx"
  		AC_DEFINE(SDL_TIMER_NSWITCH)
