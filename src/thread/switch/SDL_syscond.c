@@ -47,7 +47,6 @@ SDL_cond *
 SDL_CreateCond(void)
 {
     SDL_cond *cond;
-    Mutex *mutex;
 
     cond = (SDL_cond *) SDL_malloc(sizeof(*cond));
     if (!cond) {
