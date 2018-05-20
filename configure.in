@@ -941,7 +941,7 @@ AC_HELP_STRING([--enable-nintendo-switch], [configure SDL to work with nintendo 
         SDL_LIBS="-specs=${DEVKITPRO}/libnx/switch.specs -march=armv8-a -mtune=cortex-a57 -mtp=soft \
                   -L${DEVKITPRO}/portlibs/switch/lib $SDL_LIBS \
                   -L${DEVKITPRO}/libnx/lib -lnx"
- 		AC_DEFINE(SDL_TIMER_NSWITCH)
+                AC_DEFINE(SDL_TIMER_NSWITCH)
 		SOURCES="$SOURCES $srcdir/src/timer/switch/*.c"
 		have_timers=yes
 		AC_DEFINE(SDL_AUDIO_DRIVER_NSWITCH)
