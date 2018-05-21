@@ -129,8 +129,8 @@ static SDL_VideoDevice *SWITCH_CreateDevice(int devindex)
 	device->GetWMInfo = NULL;
 	device->InitOSKeymap = SWITCH_InitOSKeymap;
 	device->PumpEvents = SWITCH_PumpEvents;
-	
-	device->ToggleFullScreen = SWITCH_ToggleFullScreen;	
+
+	device->ToggleFullScreen = SWITCH_ToggleFullScreen;
 
 	device->free = SWITCH_DeleteDevice;
 
@@ -311,7 +311,6 @@ void SWITCH_VideoQuit(_THIS)
 		SDL_free(this->hidden->buffer);
 		this->hidden->buffer = NULL;
 	}
-	gfxConfigureResolution(0, 0);
 	gfxExit();
 }
 
@@ -332,7 +331,7 @@ static int SWITCH_FlipHWSurface (_THIS, SDL_Surface *surface) {
 
 	if(width > this->info.current_w)
 		offx = (width - this->info.current_w) / 2;
-	else 	
+	else
 		offx = 0;
 
 	if(height > this->info.current_h)
