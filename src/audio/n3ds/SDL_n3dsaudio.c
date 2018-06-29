@@ -162,7 +162,14 @@ static void N3DSAUD_ThreadInit(SDL_AudioDevice *thisdevice)
 static int N3DSAUD_OpenAudio(_THIS, SDL_AudioSpec *spec)
 {	
    //start 3ds DSP init
-	if(ndspInit()) return (-1);
+	Result rc = ndspInit();
+	if (R_FAILED(rc)) {
+		if ((R_SUMMARY(rc) == RS_NOTFOUND) && (R_MODULE(rc) == RM_DSP))
+			SDL_SetError("DSP init failed: dspfirm.cdc missing!");
+		else
+			SDL_SetError("DSP init failed. Error code: 0x%X", rc);
+		return -1;
+	}
 
 	int format = 0;
 	if(spec->channels > 2)
