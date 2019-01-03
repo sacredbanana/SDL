@@ -494,6 +494,8 @@ static void N3DS_UnlockHWSurface(_THIS, SDL_Surface *surface)
 	return;
 }
 
+static unsigned int RenderClearColor;
+
 static void videoThread(void* data)
 {
     _THIS = (SDL_VideoDevice *) data;
@@ -503,11 +505,13 @@ static void videoThread(void* data)
 //			if (C3D_FrameBegin(C3D_FRAME_SYNCDRAW)){ 
 			if (C3D_FrameBegin(C3D_FRAME_NONBLOCK)){ 
 				if (this->hidden->screens & SDL_TOPSCR) {
+					C3D_RenderTargetClear(VideoSurface1, C3D_CLEAR_ALL, RenderClearColor, 0);
 					C3D_FrameDrawOn(VideoSurface1);
 					C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projection);
 					drawTexture((400-this->hidden->w1*this->hidden->scalex)/2,(240-this->hidden->h1*this->hidden->scaley)/2, this->hidden->w1*this->hidden->scalex, this->hidden->h1*this->hidden->scaley, this->hidden->l1, this->hidden->r1, this->hidden->t1, this->hidden->b1);  
 				}
 				if (this->hidden->screens & SDL_BOTTOMSCR) {
+					C3D_RenderTargetClear(VideoSurface2, C3D_CLEAR_ALL, RenderClearColor, 0);
 					C3D_FrameDrawOn(VideoSurface2);
 					C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projection2);
 					if (this->hidden->fitscreen & SDL_FITWIDTH)
@@ -533,7 +537,7 @@ static void drawBuffers(_THIS)
 	
 		GSPGPU_FlushDataCache(this->hidden->buffer, this->hidden->w*this->hidden->h*this->hidden->byteperpixel);
 
-		C3D_SafeDisplayTransfer ((u32*)this->hidden->buffer, GX_BUFFER_DIM(this->hidden->w, this->hidden->h), (u32*)spritesheet_tex.data, GX_BUFFER_DIM(this->hidden->w, this->hidden->h), textureTranferFlags[this->hidden->mode]);
+		C3D_SyncDisplayTransfer ((u32*)this->hidden->buffer, GX_BUFFER_DIM(this->hidden->w, this->hidden->h), (u32*)spritesheet_tex.data, GX_BUFFER_DIM(this->hidden->w, this->hidden->h), textureTranferFlags[this->hidden->mode]);
 		gspWaitForPPF();
 
 		GSPGPU_FlushDataCache(spritesheet_tex.data, this->hidden->w*this->hidden->h*this->hidden->byteperpixel);
@@ -542,9 +546,9 @@ static void drawBuffers(_THIS)
 		// Configure the first fragment shading substage to just pass through the texture color
 		// See https://www.opengl.org/sdk/docs/man2/xhtml/glTexEnv.xml for more insight
 		C3D_TexEnv* env = C3D_GetTexEnv(0);
+		C3D_TexEnvInit(env);
 		C3D_TexEnvSrc(env, C3D_Both, GPU_TEXTURE0, 0, 0);
 		
-		C3D_TexEnvOp(env, C3D_Both, 0, 0, 0);
 		C3D_TexEnvFunc(env, C3D_Both, GPU_REPLACE);
 
 		gspWaitForVBlank();
@@ -698,13 +702,13 @@ static void sceneInit(GSPGPU_FramebufferFormats mode, bool scale) {
 		gfxSetScreenFormat(GFX_BOTTOM, GSP_RGB565_OES);
 	}
 
+	RenderClearColor = clearcolors[mode];
 
 	// Initialize the top screen render target
 	if (scale)
 		VideoSurface1 = C3D_RenderTargetCreate(240*2, 400*2, mode, GPU_RB_DEPTH24_STENCIL8);
 	else
 		VideoSurface1 = C3D_RenderTargetCreate(240, 400, mode, GPU_RB_DEPTH24_STENCIL8);
-	C3D_RenderTargetSetClear(VideoSurface1, C3D_CLEAR_ALL, clearcolors[mode], 0);
 	if(scale)	
 		C3D_RenderTargetSetOutput(VideoSurface1, GFX_TOP, GFX_LEFT, displayTranferFlags[mode] | GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_XY));
 	else
@@ -715,7 +719,6 @@ static void sceneInit(GSPGPU_FramebufferFormats mode, bool scale) {
 		VideoSurface2 = C3D_RenderTargetCreate(240*2, 320*2, mode, GPU_RB_DEPTH24_STENCIL8);
 	else
 		VideoSurface2 = C3D_RenderTargetCreate(240, 320, mode, GPU_RB_DEPTH24_STENCIL8);
-	C3D_RenderTargetSetClear(VideoSurface2, C3D_CLEAR_ALL, clearcolors[mode], 0);
 	if (scale)	
 		C3D_RenderTargetSetOutput(VideoSurface2, GFX_BOTTOM, GFX_LEFT, displayTranferFlags[mode] | GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_XY));
 	else
