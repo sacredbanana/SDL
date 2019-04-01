@@ -1227,7 +1227,7 @@ extern "C"
 #endif /* LACKS_STRINGS_H */
 #endif /* USE_BUILTIN_FFS */
 #if HAVE_MMAP
-#ifndef LACKS_SYS_MMAN_H
+#if !defined(LACKS_SYS_MMAN_H) && !defined(__SWITCH__)
 #include <sys/mman.h>           /* for mmap */
 #endif /* LACKS_SYS_MMAN_H */
 #ifndef LACKS_FCNTL_H

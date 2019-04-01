@@ -60,7 +60,7 @@
 #if defined(__3dNOW__) && !defined(SDL_DISABLE_MM3DNOW_H)
 #include <mm3dnow.h>
 #endif
-#if HAVE_IMMINTRIN_H && !defined(SDL_DISABLE_IMMINTRIN_H)
+#if HAVE_IMMINTRIN_H && !defined(SDL_DISABLE_IMMINTRIN_H) && !defined(__SWITCH__)
 #include <immintrin.h>
 #else
 #if defined(__MMX__) && !defined(SDL_DISABLE_MMINTRIN_H)

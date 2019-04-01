@@ -305,6 +305,12 @@ windows_file_close(SDL_RWops * context)
 
 #ifdef HAVE_STDIO_H
 
+#ifdef __SWITCH__
+#define off64_t _off64_t
+#undef HAVE_FOPEN64
+#undef HAVE_FSEEKO64
+#endif
+
 #ifdef HAVE_FOPEN64
 #define fopen   fopen64
 #endif

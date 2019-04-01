@@ -3765,6 +3765,13 @@ static SDL_bool SDL_MessageboxValidForDriver(const SDL_MessageBoxData *messagebo
 }
 #endif
 
+#if SDL_VIDEO_DRIVER_SWITCH
+static SDL_bool SDL_MessageboxValidForDriver(const SDL_MessageBoxData *messageboxdata, SDL_SYSWM_TYPE drivertype)
+{
+    return SDL_TRUE;
+}
+#endif
+
 int
 SDL_ShowMessageBox(const SDL_MessageBoxData *messageboxdata, int *buttonid)
 {
@@ -3837,10 +3844,16 @@ SDL_ShowMessageBox(const SDL_MessageBoxData *messageboxdata, int *buttonid)
         retval = 0;
     }
 #endif
+#if SDL_VIDEO_DRIVER_SWITCH
+    if (retval == -1 &&
+        SDL_MessageboxValidForDriver(messageboxdata, SDL_SYSWM_SWITCH)) {// &&
+        // X11_ShowMessageBox(messageboxdata, buttonid) == 0) {
+        retval = 0;
+    }
     if (retval == -1) {
         SDL_SetError("No message system available");
     }
-
+#endif
     if (current_window) {
         SDL_RaiseWindow(current_window);
         if (mouse_captured) {

@@ -61,7 +61,7 @@
 #include <sys/syspage.h>
 #endif
 
-#if (defined(__LINUX__) || defined(__ANDROID__)) && defined(__ARM_ARCH)
+#if (defined(__LINUX__) || defined(__ANDROID__)) && (defined(__ARM_ARCH) || defined(__SWITCH__))
 /*#include <asm/hwcap.h>*/
 #ifndef AT_HWCAP
 #define AT_HWCAP 16
@@ -343,7 +343,7 @@ CPU_haveNEON(void)
    query the OS kernel in a platform-specific way. :/ */
 #if defined(SDL_CPUINFO_DISABLED) || !defined(__ARM_ARCH)
     return 0;  /* disabled or not an ARM CPU at all. */
-#elif __ARM_ARCH >= 8
+#elif __ARM_ARCH >= 8 || defined(__SWITCH__)
     return 1;  /* ARMv8 always has non-optional NEON support. */
 #elif defined(__APPLE__) && (__ARM_ARCH >= 7)
     /* (note that sysctlbyname("hw.optional.neon") doesn't work!) */
@@ -407,6 +407,9 @@ SDL_GetCPUCount(void)
 {
     if (!SDL_CPUCount) {
 #ifndef SDL_CPUINFO_DISABLED
+#ifdef __SWITCH__
+        SDL_CPUCount = 8; /* The Nintendo Switch has 8 processors for now */
+#else
 #if defined(HAVE_SYSCONF) && defined(_SC_NPROCESSORS_ONLN)
         if (SDL_CPUCount <= 0) {
             SDL_CPUCount = (int)sysconf(_SC_NPROCESSORS_ONLN);
@@ -430,6 +433,7 @@ SDL_GetCPUCount(void)
             DosQuerySysInfo(QSV_NUMPROCESSORS, QSV_NUMPROCESSORS,
                             &SDL_CPUCount, sizeof(SDL_CPUCount) );
         }
+#endif
 #endif
 #endif
         /* There has to be at least 1, right? :) */
@@ -698,7 +702,7 @@ SDL_GetSystemRAM(void)
 {
     if (!SDL_SystemRAM) {
 #ifndef SDL_CPUINFO_DISABLED
-#if defined(HAVE_SYSCONF) && defined(_SC_PHYS_PAGES) && defined(_SC_PAGESIZE)
+#if defined(HAVE_SYSCONF) && defined(_SC_PHYS_PAGES) && defined(_SC_PAGESIZE) && !defined(__SWITCH__)
         if (SDL_SystemRAM <= 0) {
             SDL_SystemRAM = (int)((Sint64)sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE) / (1024*1024));
         }

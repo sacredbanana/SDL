@@ -167,8 +167,10 @@
 #cmakedefine HAVE_FOPEN64 1
 #cmakedefine HAVE_FSEEKO 1
 #cmakedefine HAVE_FSEEKO64 1
+#ifdef __SWITCH__
 #cmakedefine HAVE_SIGACTION 1
 #cmakedefine HAVE_SA_SIGACTION 1
+#endif
 #cmakedefine HAVE_SETJMP 1
 #cmakedefine HAVE_NANOSLEEP 1
 #cmakedefine HAVE_SYSCONF 1
@@ -300,6 +302,7 @@
 /* Enable various timer systems */
 #cmakedefine SDL_TIMER_HAIKU @SDL_TIMER_HAIKU@
 #cmakedefine SDL_TIMER_DUMMY @SDL_TIMER_DUMMY@
+#cmakedefine SDL_TIMER_SWITCH @SDL_TIMER_SWITCH@
 #cmakedefine SDL_TIMER_UNIX @SDL_TIMER_UNIX@
 #cmakedefine SDL_TIMER_WINDOWS @SDL_TIMER_WINDOWS@
 #cmakedefine SDL_TIMER_WINCE @SDL_TIMER_WINCE@
@@ -316,6 +319,7 @@
 #cmakedefine SDL_VIDEO_DRIVER_RPI @SDL_VIDEO_DRIVER_RPI@
 #cmakedefine SDL_VIDEO_DRIVER_VIVANTE @SDL_VIDEO_DRIVER_VIVANTE@
 #cmakedefine SDL_VIDEO_DRIVER_VIVANTE_VDK @SDL_VIDEO_DRIVER_VIVANTE_VDK@
+#cmakedefine SDL_VIDEO_DRIVER_SWITCH @SDL_VIDEO_DRIVER_SWITCH@
 
 #cmakedefine SDL_VIDEO_DRIVER_KMSDRM @SDL_VIDEO_DRIVER_KMSDRM@
 #cmakedefine SDL_VIDEO_DRIVER_KMSDRM_DYNAMIC @SDL_VIDEO_DRIVER_KMSDRM_DYNAMIC@
@@ -374,7 +378,9 @@
 #cmakedefine SDL_VIDEO_OPENGL_OSMESA_DYNAMIC @SDL_VIDEO_OPENGL_OSMESA_DYNAMIC@
 
 /* Enable Vulkan support */
+#ifndef __SWITCH__ /* No Vulkan on Nintendo Switch yet */
 #cmakedefine SDL_VIDEO_VULKAN @SDL_VIDEO_VULKAN@
+#endif
 
 /* Enable system power support */
 #cmakedefine SDL_POWER_ANDROID @SDL_POWER_ANDROID@

@@ -51,7 +51,7 @@ SDL_HandleSIG(int sig)
 static int
 SDL_QuitInit_Internal(void)
 {
-#ifdef HAVE_SIGACTION
+#if defined(HAVE_SIGACTION) && !defined(__SWITCH__)
     struct sigaction action;
     sigaction(SIGINT, NULL, &action);
 #ifdef HAVE_SA_SIGACTION
@@ -100,7 +100,7 @@ SDL_QuitInit(void)
 static void
 SDL_QuitQuit_Internal(void)
 {
-#ifdef HAVE_SIGACTION
+#if defined(HAVE_SIGACTION) && !defined(__SWITCH__)
     struct sigaction action;
     sigaction(SIGINT, NULL, &action);
     if ( action.sa_handler == SDL_HandleSIG ) {

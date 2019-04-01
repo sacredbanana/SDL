@@ -51,6 +51,8 @@ extern "C" {
 struct SDL_SysWMinfo;
 #else
 
+
+
 #if defined(SDL_VIDEO_DRIVER_WINDOWS)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -63,7 +65,7 @@ struct SDL_SysWMinfo;
 #endif
 
 /* This is the structure for custom window manager events */
-#if defined(SDL_VIDEO_DRIVER_X11)
+#if defined(SDL_VIDEO_DRIVER_X11) && !defined(__SWITCH__)
 #if defined(__APPLE__) && defined(__MACH__)
 /* conflicts with Quickdraw.h */
 #define Cursor X11Cursor
@@ -110,6 +112,11 @@ typedef void *EGLSurface;
 #include "SDL_egl.h"
 #endif
 
+#if defined(SDL_VIDEO_DRIVER_SWITCH)
+#undef SDL_SDL_VIDEO_DRIVER_X11
+#include "SDL_egl.h"
+#endif
+
 /**
  *  These are the various supported windowing subsystems
  */
@@ -126,7 +133,8 @@ typedef enum
     SDL_SYSWM_WINRT,
     SDL_SYSWM_ANDROID,
     SDL_SYSWM_VIVANTE,
-    SDL_SYSWM_OS2
+    SDL_SYSWM_OS2,
+    SDL_SYSWM_SWITCH
 } SDL_SYSWM_TYPE;
 
 /**
@@ -146,7 +154,7 @@ struct SDL_SysWMmsg
             LPARAM lParam;              /**< LONG message parameter */
         } win;
 #endif
-#if defined(SDL_VIDEO_DRIVER_X11)
+#if defined(SDL_VIDEO_DRIVER_X11) && !defined(__SWITCH__)
         struct {
             XEvent event;
         } x11;
@@ -180,6 +188,13 @@ struct SDL_SysWMmsg
             /* No Vivante window events yet */
         } vivante;
 #endif
+#if defined(SDL_VIDEO_DRIVER_SWITCH)
+        struct
+        {
+            int dummy;
+            /* No Swtich window events yet */
+        } vivante;
+#endif
         /* Can't have an empty union */
         int dummy;
     } msg;
@@ -211,7 +226,7 @@ struct SDL_SysWMinfo
             IInspectable * window;      /**< The WinRT CoreWindow */
         } winrt;
 #endif
-#if defined(SDL_VIDEO_DRIVER_X11)
+#if defined(SDL_VIDEO_DRIVER_X11) && !defined(__SWITCH__)
         struct
         {
             Display *display;           /**< The X11 display */
@@ -264,7 +279,6 @@ struct SDL_SysWMinfo
             struct MirSurface *surface;  /**< Mir surface */
         } mir;
 #endif
-
 #if defined(SDL_VIDEO_DRIVER_ANDROID)
         struct
         {
@@ -272,8 +286,14 @@ struct SDL_SysWMinfo
             EGLSurface surface;
         } android;
 #endif
-
 #if defined(SDL_VIDEO_DRIVER_VIVANTE)
+        struct
+        {
+            EGLNativeDisplayType display;
+            EGLNativeWindowType window;
+        } vivante;
+#endif
+#if defined(SDL_VIDEO_DRIVER_SWITCH)
         struct
         {
             EGLNativeDisplayType display;
